@@ -21,3 +21,4 @@ Consulta la guía del proyecto para los requisitos y la reconstrucción.
 El archivo `servidor.py` y el historial de texto corresponden al prototipo previo;
 no utilizan el nuevo protocolo ni se importan automáticamente al historial SQLite.
 # Chat_local_network
+# Chat_local_network
