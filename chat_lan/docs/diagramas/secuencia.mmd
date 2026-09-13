@@ -1,0 +1,21 @@
+sequenceDiagram
+    participant C as Cliente
+    participant L as SQLite local
+    participant S as Servidor
+    participant D as SQLite oficial
+    C->>S: LOGIN(device_id, nombre)
+    S->>D: Registrar o actualizar usuario
+    S-->>C: LOGIN_OK(color, ultimo_id, server_id)
+    loop Hasta hay_mas=false
+        C->>S: SYNC(ultimo_id local)
+        S->>D: Consultar mensajes posteriores
+        S-->>C: SYNC_RESPONSE(mensajes, cursor, hay_mas)
+        C->>L: Transacción: historial y cursor
+    end
+    C->>L: Guardar pendiente con UUID
+    C->>S: MESSAGE(contenido, UUID)
+    S->>D: Insertar si UUID no existe
+    S-->>C: MESSAGE oficial
+    C->>L: Persistir y retirar pendiente
+    S-->>C: MESSAGE_ACK(UUID, id)
+    Note over C,S: Tras un corte: reconectar, sincronizar y reenviar pendientes

@@ -1,0 +1,2 @@
+[13:58:07] SERVIDOR INICIADO
+[14:00:43] prueba se ha conectado desde 172.20.10.5:40812.

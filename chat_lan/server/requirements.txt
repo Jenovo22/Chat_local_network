@@ -1,0 +1,1 @@
+# Python 3.12+. El servidor utiliza únicamente la biblioteca estándar.

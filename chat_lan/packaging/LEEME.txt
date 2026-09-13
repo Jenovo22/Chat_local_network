@@ -1,0 +1,19 @@
+CHAT LAN — Ubuntu 24.04, equipos Intel/AMD de 64 bits
+
+1. Extrae el paquete y abre ChatLAN con doble clic.
+2. Introduce la IP del servidor y tu nombre.
+3. Pulsa Conectar y comienza a escribir.
+
+No necesitas instalar Python ni PySide6. La aplicación recuerda tus datos
+para conectarse automáticamente la próxima vez. El puerto es 5000.
+Para cambiar los datos, pulsa Desconectar.
+
+Si no abre, revisa Propiedades → Permisos → Permitir ejecutar como programa.
+También puedes abrir una terminal en esta carpeta y ejecutar: ./ChatLAN
+
+El servidor debe estar encendido y todos deben estar en la misma red LAN/WiFi.
+El historial se guarda en ~/.local/share/chat_lan/chat_local.db, o en la carpeta
+XDG_DATA_HOME si está configurada. No copies ese archivo entre dispositivos.
+
+Este archivo es para Ubuntu 24.04 x86_64 y sistemas Linux compatibles con glibc
+2.39 o posterior. No sirve para Windows, macOS, ARM ni celulares.
