@@ -60,7 +60,8 @@ The implementation is modular but assumes familiarity with sockets, threads, SQL
 
 - Slice 1 → `main`: CPS-1 and CPS-2; commits `fefd2fa`, `34f8a54`, and `b70d990`; 281 changed lines against `ebef069`; verified independently and assessed `medium/under_budget`.
 - Slice 2 → `main` after Slice 1: CPS-3 plus final task evidence; commits `d440583` and `6aa83c8`; 169 changed lines. Rollback reverts its comments/docstrings in `chat_lan/packaging/*.py`, `chat_lan/tests/*.py`, and `servidor.py`, plus its ODD evidence update.
-- Pull requests were not created because remote delivery was not requested; these are the recorded future PR boundaries.
+- PR 1 is open at `https://github.com/Jenovo22/Chat_local_network/pull/1` from `docs/comment-python-source-core` to `main` (281 changed lines).
+- PR 2 remains intentionally unopened until PR 1 merges, so its eventual diff toward `main` contains only the 169-line packaging/tests/legacy slice.
 
 ## Progress
 
@@ -70,4 +71,4 @@ The implementation is modular but assumes familiarity with sockets, threads, SQL
 
 ## Next step
 
-No source work remains. Report the verified outcome; push and pull-request creation remain optional user-owned delivery steps.
+Wait for PR 1 to merge, then materialize the second clean branch from updated `main`, open PR 2, and preserve the recorded verification evidence.
