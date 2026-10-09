@@ -72,7 +72,7 @@ class Database:
     def history(self, after, limit=40):
         """Devuelve hasta ``limit`` mensajes posteriores al cursor ``after``."""
 
-        # El JOIN incorpora device_id sin duplicarlo en la tabla de mensajes.
+        # El JOIN incorpora device_id y la comprensión convierte cada sqlite3.Row en dict.
         return [dict(row) for row in self.conn.execute(
             "SELECT m.*,u.device_id FROM mensajes m JOIN usuarios u ON u.id=m.usuario_id WHERE m.id>? ORDER BY m.id LIMIT ?", (after, limit))]
 

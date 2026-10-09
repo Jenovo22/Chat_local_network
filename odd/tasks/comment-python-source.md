@@ -39,7 +39,7 @@ The implementation is modular but assumes familiarity with sockets, threads, SQL
   - Files: `chat_lan/common/*.py`, `chat_lan/server/*.py`.
   - Acceptance: modules, public classes/functions, threading/locking, protocol dispatch, validation, and SQL behavior are explained without behavior changes.
   - Checks: server/common compilation and relevant unit tests.
-  - Evidence: 94 explanatory lines added across 8 files; `python3 -m compileall -q common server` passed; `python3 -m unittest discover -s tests -v` passed with 9 tests run (8 passed, 1 skipped because PySide6 is unavailable); parent spot-check compilation and `git diff --check` passed. Commit pending.
+  - Evidence: commit `fefd2fa`; 94 explanatory lines added across 8 files; `python3 -m compileall -q common server` passed; `python3 -m unittest discover -s tests -v` passed with 9 tests run (8 passed, 1 skipped because PySide6 is unavailable); parent spot-check compilation and `git diff --check` passed. Independent verification confirmed identical executable ASTs and identified three low-severity teaching imprecisions, corrected in a follow-up commit.
 
 - [ ] **CPS-2 — Explain client runtime and interface**
   - Route: delegated writer; implementation spans multiple non-trivial files.
@@ -59,7 +59,7 @@ The implementation is modular but assumes familiarity with sockets, threads, SQL
 
 - Current task: CPS-2.
 - Completed checks: CPS-1 compilation, full unit suite, diff whitespace validation, and structural diff readback.
-- Failed, unavailable, or skipped checks: GUI test skipped because PySide6 is unavailable. Initial native risk assessment was unassessable because existing untracked metadata requires explicit inventory; review will be assessed against the committed work-unit boundary.
+- Failed, unavailable, or skipped checks: GUI test skipped because PySide6 is unavailable. Native assessment was initially unassessable because existing untracked metadata required explicit inventory; its exact selection continuation then returned a START for only the uncommitted ODD document instead of the committed work-unit range. That incorrect START was not executed, native review is recorded as unavailable, and an independent verifier inspected `ebef069..fefd2fa` instead.
 
 ## Next step
 

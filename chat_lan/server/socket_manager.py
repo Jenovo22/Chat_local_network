@@ -137,7 +137,7 @@ class ChatServer:
                 device_id = str(uuid.UUID(device_id))
             except ValueError as exc:
                 raise ProtocolError("device_id debe ser UUID") from exc
-            # La comprensión corta al encontrar el mismo dispositivo ya autenticado.
+            # any() deja de evaluar el generador al encontrar el dispositivo autenticado.
             if any(p.user and p.user['device_id'] == device_id for p in self.peers):
                 raise ProtocolError("El dispositivo ya está conectado")
             peer.user = login(self.db, payload, address[0])
@@ -169,7 +169,7 @@ class ChatServer:
                 raise ProtocolError("client_message_id inválido") from exc
             message, created = self.db.save_message(peer.user, content, request_id)
             if created:
-                # La copia evita iterar directamente sobre un conjunto que puede cambiar.
+                # La copia fija los destinatarios antes de comenzar esta ronda de envíos.
                 for target in list(self.peers):
                     if target.ready:
                         try:
