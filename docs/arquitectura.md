@@ -2,7 +2,7 @@
 
 ## Vista interactiva
 
-La [arquitectura interactiva de Archify](../../.archify/architecture-chat-lan-20261009-081900/architecture-chat-lan.html)
+La [arquitectura interactiva de Archify](diagramas/arquitectura.html)
 complementa este diagrama con los límites cliente/servidor, las dos SQLite y el
 codec Go explícitamente fuera de la ruta operativa.
 
@@ -52,7 +52,7 @@ tramas (JSON UTF-8 delimitado por LF) y comprueba compatibilidad con
 `common/protocol.py`. No contiene listener TCP, gestión de sesiones, SQLite,
 CLI ni clientes; por ello el servidor Python sigue siendo la implementación
 funcional del sistema. El detalle de su alcance está en
-[`../server_go/README.md`](../server_go/README.md) y su evidencia en la
+[migración Go](migracion-go.md) y su evidencia en la
 [matriz de verificación](verificacion.md).
 
 ## Sincronización sin huecos

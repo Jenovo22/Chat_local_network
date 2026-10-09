@@ -104,11 +104,11 @@ chat_lan/
     └── diagramas/secuencia.mmd
 ```
 
-Consulta la [descripción funcional](docs/descripcion-funcional.md), los
-[requisitos y casos de uso](docs/requisitos-y-casos-de-uso.md), la
-[arquitectura](docs/arquitectura.md) y la [matriz de verificación](docs/verificacion.md)
+Consulta la [descripción funcional](descripcion-funcional.md), los
+[requisitos y casos de uso](requisitos-y-casos-de-uso.md), la
+[arquitectura](arquitectura.md) y la [matriz de verificación](verificacion.md)
 para el alcance y la evidencia. El módulo experimental
-[`server_go`](server_go/README.md) solo implementa el codec de protocolo; no
+[`server_go`](migracion-go.md) solo implementa el codec de protocolo; no
 reemplaza al servidor Python.
 
 ## Pruebas
@@ -139,7 +139,7 @@ go test ./...
 ```
 
 Incluye compatibilidad de codec con `common/protocol.py`, pero no prueba un
-servidor Go completo. Véase [verificación](docs/verificacion.md).
+servidor Go completo. Véase [verificación](verificacion.md).
 
 ## Ejecutable para compartir
 
