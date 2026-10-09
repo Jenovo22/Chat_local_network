@@ -51,8 +51,8 @@ with tempfile.TemporaryDirectory() as folder:
             local.set('nombre', f'Usuario {i}')
             log = open(path / f'gui{i}.log', 'w+')
             logs.append(log)
-            # offscreen evita depender de un monitor. Quitar las variables del
-            # entorno Python comprueba que el binario sea realmente autónomo.
+            # offscreen evita depender de un monitor. Quitar estas variables
+            # reduce la influencia del entorno Python desde el que se verifica.
             env = dict(os.environ, QT_QPA_PLATFORM='offscreen')
             env.pop('PYTHONPATH', None)
             env.pop('VIRTUAL_ENV', None)

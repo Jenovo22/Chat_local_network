@@ -28,7 +28,7 @@ The implementation is modular but assumes familiarity with sockets, threads, SQL
 
 - Delivery strategy: `ask-on-risk`.
 - Chain strategy: `stacked-to-main`, explicitly selected after the forecast crossed 400 lines.
-- Updated forecast: approximately 430–500 authored changed lines. The committed range currently contains 281 changed lines, so CPS-3 is expected to cross the 400-line delivery threshold and requires a chained delivery strategy before its commit.
+- Final total: 434 changed lines against `ebef069`, divided into two reviewable stacked-to-main slices.
 - TDD: disabled/unknown; no explicit project TDD configuration was found.
 - Test runner: `python3 -m unittest discover -s tests -v` from `chat_lan/`.
 - Structural check: `python3 -m compileall -q common server client packaging tests` from `chat_lan/`, plus `python3 -m py_compile servidor.py` from the repository root.
@@ -54,20 +54,20 @@ The implementation is modular but assumes familiarity with sockets, threads, SQL
   - Files: `chat_lan/packaging/*.py`, `chat_lan/tests/*.py`, `servidor.py`.
   - Acceptance: build/verification steps, fixtures and assertions, and the legacy script's flow are documented; legacy status is explicit; behavior is unchanged.
   - Checks: full compilation and complete unit test suite.
-  - Evidence: 146 authored changed lines across 6 files; `python3 -m compileall -q packaging tests`, `python3 -m py_compile servidor.py`, and `python3 -m unittest discover -s tests -v` passed with 9 tests run (8 passed, 1 skipped because PySide6 is unavailable); executable AST comparison, parent spot-checks, structural diff readback, and `git diff --check` passed. Packaging/build scripts were intentionally not executed because they replace generated artifacts. Commit pending.
+  - Evidence: commit `d440583`; 146 authored source changed lines across 6 files; `python3 -m compileall -q packaging tests`, `python3 -m py_compile servidor.py`, and `python3 -m unittest discover -s tests -v` passed with 9 tests run (8 passed, 1 skipped because PySide6 is unavailable); executable AST comparison, parent spot-checks, structural diff readback, and `git diff --check` passed. Packaging/build scripts were intentionally not executed because they replace generated artifacts. Independent verification found two low-severity teaching imprecisions, corrected in a follow-up commit.
 
 ## Delivery slices
 
 - Slice 1 → `main`: CPS-1 and CPS-2; commits `fefd2fa`, `34f8a54`, and `b70d990`; 281 changed lines against `ebef069`; verified independently and assessed `medium/under_budget`.
-- Slice 2 → `main` after Slice 1: CPS-3 plus final task evidence; one autonomous documentation work unit; expected below 200 changed lines. Rollback removes comments/docstrings only from `chat_lan/packaging/*.py`, `chat_lan/tests/*.py`, and `servidor.py`.
+- Slice 2 → `main` after Slice 1: CPS-3 plus final task evidence; commit `d440583`; 169 changed lines. Rollback reverts its comments/docstrings in `chat_lan/packaging/*.py`, `chat_lan/tests/*.py`, and `servidor.py`, plus its ODD evidence update.
 - Pull requests were not created because remote delivery was not requested; these are the recorded future PR boundaries.
 
 ## Progress
 
-- Current task: all implementation tasks completed; final commit and delivery assessment pending.
+- Current task: all implementation tasks completed and independently verified.
 - Completed checks: compilation for all Python areas, full unit suites, diff whitespace validation, structural diff readback, and executable-AST comparisons.
-- Failed, unavailable, or skipped checks: GUI test skipped because PySide6 is unavailable. Packaging/build scripts were not run because they create or replace generated artifacts. CPS-1 native assessment was initially unassessable because existing untracked metadata required explicit inventory; its exact selection continuation then returned a START for only the uncommitted ODD document instead of the committed work-unit range. That incorrect START was not executed, and an independent verifier inspected `ebef069..fefd2fa` instead. CPS-2 reassessment with explicit exclusion succeeded as `medium/under_budget`.
+- Failed, unavailable, or skipped checks: GUI test skipped because PySide6 is unavailable. Packaging/build scripts were not run because they create or replace generated artifacts. CPS-1 native assessment was initially unassessable because existing untracked metadata required explicit inventory; its exact selection continuation then returned a START for only the uncommitted ODD document instead of the committed work-unit range. The same selector loss recurred for the high-risk CPS-3 range. Neither incorrect START was executed; independent verifiers inspected both committed ranges. CPS-2 reassessment with explicit exclusion succeeded as `medium/under_budget`.
 
 ## Next step
 
-Commit CPS-3, record its commit identity, assess the completed second slice, and report the verified outcome.
+Commit the final teaching corrections and task evidence, then report the verified outcome and optional delivery steps.
