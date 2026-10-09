@@ -54,12 +54,12 @@ The implementation is modular but assumes familiarity with sockets, threads, SQL
   - Files: `chat_lan/packaging/*.py`, `chat_lan/tests/*.py`, `servidor.py`.
   - Acceptance: build/verification steps, fixtures and assertions, and the legacy script's flow are documented; legacy status is explicit; behavior is unchanged.
   - Checks: full compilation and complete unit test suite.
-  - Evidence: commit `d440583`; 146 authored source changed lines across 6 files; `python3 -m compileall -q packaging tests`, `python3 -m py_compile servidor.py`, and `python3 -m unittest discover -s tests -v` passed with 9 tests run (8 passed, 1 skipped because PySide6 is unavailable); executable AST comparison, parent spot-checks, structural diff readback, and `git diff --check` passed. Packaging/build scripts were intentionally not executed because they replace generated artifacts. Independent verification found two low-severity teaching imprecisions, corrected in a follow-up commit.
+  - Evidence: commits `d440583` and `6aa83c8`; 146 authored source changed lines across 6 files; `python3 -m compileall -q packaging tests`, `python3 -m py_compile servidor.py`, and `python3 -m unittest discover -s tests -v` passed with 9 tests run (8 passed, 1 skipped because PySide6 is unavailable); executable AST comparison, parent spot-checks, structural diff readback, and `git diff --check` passed. Packaging/build scripts were intentionally not executed because they replace generated artifacts. Independent verification found two low-severity teaching imprecisions, corrected in the follow-up commit.
 
 ## Delivery slices
 
 - Slice 1 → `main`: CPS-1 and CPS-2; commits `fefd2fa`, `34f8a54`, and `b70d990`; 281 changed lines against `ebef069`; verified independently and assessed `medium/under_budget`.
-- Slice 2 → `main` after Slice 1: CPS-3 plus final task evidence; commit `d440583`; 169 changed lines. Rollback reverts its comments/docstrings in `chat_lan/packaging/*.py`, `chat_lan/tests/*.py`, and `servidor.py`, plus its ODD evidence update.
+- Slice 2 → `main` after Slice 1: CPS-3 plus final task evidence; commits `d440583` and `6aa83c8`; 169 changed lines. Rollback reverts its comments/docstrings in `chat_lan/packaging/*.py`, `chat_lan/tests/*.py`, and `servidor.py`, plus its ODD evidence update.
 - Pull requests were not created because remote delivery was not requested; these are the recorded future PR boundaries.
 
 ## Progress
@@ -70,4 +70,4 @@ The implementation is modular but assumes familiarity with sockets, threads, SQL
 
 ## Next step
 
-Commit the final teaching corrections and task evidence, then report the verified outcome and optional delivery steps.
+No source work remains. Report the verified outcome; push and pull-request creation remain optional user-owned delivery steps.
