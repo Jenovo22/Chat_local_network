@@ -13,7 +13,7 @@ root = Path(__file__).resolve().parents[1]
 extra = []
 for library in (root / 'packaging/vendor/extracted/usr/lib').glob('*/libxcb-cursor.so.0'):
     # Algunas distribuciones necesitan incluir explícitamente esta biblioteca
-    # de Qt. PyInstaller espera cada origen y destino como dos argumentos.
+    # de Qt. PyInstaller recibe --add-binary y un valor combinado ORIGEN:DESTINO.
     extra.extend(['--add-binary', str(library) + ':.' ])
 # sys.executable conserva el mismo intérprete y entorno donde está instalado
 # PyInstaller; check=True convierte un fallo del empaquetador en una excepción.
