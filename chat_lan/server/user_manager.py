@@ -4,8 +4,11 @@ from common.protocol import ProtocolError, text_field
 
 
 def login(database, payload, ip):
+    """Valida la identidad declarada y registra la IP observada por el servidor."""
+
     device_id = text_field(payload, "device_id", 36)
     try:
+        # Reconstruir el UUID valida su sintaxis y lo normaliza a una forma canónica.
         device_id = str(uuid.UUID(device_id))
     except ValueError as exc:
         raise ProtocolError("device_id debe ser un UUID") from exc
