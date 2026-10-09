@@ -8,16 +8,24 @@ from client.network import NetworkClient
 
 
 class Bridge(QObject):
+    """Convierte callbacks del hilo de red en señales seguras para Qt."""
+
+    # Qt entrega esta señal en el hilo de la interfaz, donde sí es válido tocar widgets.
     event = Signal(str, dict)
 
 
 class ChatWindow(QMainWindow):
+    """Presenta el historial local y coordina conexión, envío y cierre."""
+
     def __init__(self, database, host, port, name):
+        """Construye los widgets y restaura el estado útil de la sesión anterior."""
+
         super().__init__()
         self.db = database
         self.network = None
         self.seen = set()
         self.bridge = Bridge(self)
+        # El callback de NetworkClient emitirá esta señal en vez de modificar la UI.
         self.bridge.event.connect(self.on_event)
         self.setWindowTitle('Chat LAN')
         self.resize(880, 680)
@@ -85,6 +93,8 @@ class ChatWindow(QMainWindow):
             QTimer.singleShot(0, self.connect_chat)
 
     def connect_chat(self):
+        """Alterna entre desconexión y arranque de una nueva sesión de red."""
+
         if self.network:
             self.network.stop()
             self.network = None
@@ -111,6 +121,8 @@ class ChatWindow(QMainWindow):
         self.network.start()
 
     def send(self):
+        """Pasa el texto a la cola durable y refleja errores de validación."""
+
         if not self.network:
             return
         try:
@@ -120,7 +132,10 @@ class ChatWindow(QMainWindow):
             self.status.setText(str(exc))
 
     def show_messages(self, messages):
+        """Añade mensajes todavía no mostrados y escapa su contenido para HTML."""
+
         for message in messages:
+            # Un lote sincronizado y una notificación en vivo pueden coincidir.
             if message['id'] in self.seen:
                 continue
             self.seen.add(message['id'])
@@ -128,11 +143,14 @@ class ChatWindow(QMainWindow):
             # No interpretar HTML procedente de nombres o mensajes de la red.
             if len(color) != 7 or color[0] != '#' or any(c not in '0123456789abcdefABCDEF' for c in color[1:]):
                 color = '#3498DB'
+            # Solo las etiquetas creadas aquí son HTML; los datos remotos se escapan.
             self.history.append(f'<p><b style="color:{color}">{html.escape(message["nombre"])}</b> '
                                 f'<small>· {html.escape(message["device_id"][:8])} · {html.escape(message["fecha"])}</small><br>'
                                 f'{html.escape(message["contenido"]).replace(chr(10), "<br>")}</p>')
 
     def on_event(self, kind, payload):
+        """Actualiza widgets según el evento recibido mediante ``Bridge``."""
+
         if kind == 'status':
             self.status.setText(payload['texto'])
         elif kind == 'login':
@@ -144,16 +162,23 @@ class ChatWindow(QMainWindow):
         elif kind == 'pending':
             self.pending.setText(f'Pendientes de confirmar: {payload["cantidad"]}')
         elif kind == 'reset':
+            # Un server_id distinto representa otro historial; se elimina también
+            # la deduplicación visual para poder mostrar sus identificadores.
             self.seen.clear()
             self.history.clear()
 
     def closeEvent(self, event):
+        """Detiene el hilo de red antes de permitir el cierre de la ventana."""
+
         if self.network:
             self.network.stop()
         event.accept()
 
 
 def run(database, host, port, name):
+    """Crea o reutiliza QApplication y mantiene viva la ventana principal."""
+
+    # Reutilizar la instancia facilita invocar run desde entornos que ya poseen Qt.
     app = QApplication.instance() or QApplication([])
     window = ChatWindow(database, host, port, name)
     window.show()

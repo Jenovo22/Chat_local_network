@@ -39,14 +39,14 @@ The implementation is modular but assumes familiarity with sockets, threads, SQL
   - Files: `chat_lan/common/*.py`, `chat_lan/server/*.py`.
   - Acceptance: modules, public classes/functions, threading/locking, protocol dispatch, validation, and SQL behavior are explained without behavior changes.
   - Checks: server/common compilation and relevant unit tests.
-  - Evidence: commit `fefd2fa`; 94 explanatory lines added across 8 files; `python3 -m compileall -q common server` passed; `python3 -m unittest discover -s tests -v` passed with 9 tests run (8 passed, 1 skipped because PySide6 is unavailable); parent spot-check compilation and `git diff --check` passed. Independent verification confirmed identical executable ASTs and identified three low-severity teaching imprecisions, corrected in a follow-up commit.
+  - Evidence: commits `fefd2fa` and `34f8a54`; 94 explanatory lines added across 8 files; `python3 -m compileall -q common server` passed; `python3 -m unittest discover -s tests -v` passed with 9 tests run (8 passed, 1 skipped because PySide6 is unavailable); parent spot-check compilation and `git diff --check` passed. Independent verification confirmed identical executable ASTs and identified three low-severity teaching imprecisions, corrected in the follow-up commit.
 
-- [ ] **CPS-2 — Explain client runtime and interface**
+- [x] **CPS-2 — Explain client runtime and interface**
   - Route: delegated writer; implementation spans multiple non-trivial files.
   - Files: `chat_lan/client/*.py`.
   - Acceptance: local persistence, reconnect loop, message synchronization, console flow, Qt signals/widgets, and compatibility imports are explained without behavior changes.
   - Checks: client compilation and complete unit test suite.
-  - Evidence: pending.
+  - Evidence: 118 explanatory lines added across 6 files; `python3 -m compileall -q client` passed; `python3 -m unittest discover -s tests -v` passed with 9 tests run (8 passed, 1 skipped because PySide6 is unavailable); executable AST comparison and `git diff --check -- chat_lan/client` passed; parent spot-check compilation and structural diff readback passed. Commit pending.
 
 - [ ] **CPS-3 — Explain packaging, tests, and legacy prototype**
   - Route: delegated writer; implementation spans packaging scripts, test suites, and a legacy standalone file.
@@ -57,10 +57,10 @@ The implementation is modular but assumes familiarity with sockets, threads, SQL
 
 ## Progress
 
-- Current task: CPS-2.
-- Completed checks: CPS-1 compilation, full unit suite, diff whitespace validation, and structural diff readback.
+- Current task: CPS-3.
+- Completed checks: CPS-1 and CPS-2 compilation, full unit suites, diff whitespace validation, structural diff readback, and executable-AST comparisons.
 - Failed, unavailable, or skipped checks: GUI test skipped because PySide6 is unavailable. Native assessment was initially unassessable because existing untracked metadata required explicit inventory; its exact selection continuation then returned a START for only the uncommitted ODD document instead of the committed work-unit range. That incorrect START was not executed, native review is recorded as unavailable, and an independent verifier inspected `ebef069..fefd2fa` instead.
 
 ## Next step
 
-Commit CPS-1 as one documentation work unit, assess its review range, then delegate CPS-2.
+Commit CPS-2, update the delivery forecast, then delegate CPS-3 within the selected delivery boundary.
