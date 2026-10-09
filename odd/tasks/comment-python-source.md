@@ -61,7 +61,7 @@ The implementation is modular but assumes familiarity with sockets, threads, SQL
 - Slice 1 → `main`: CPS-1 and CPS-2; commits `fefd2fa`, `34f8a54`, and `b70d990`; 281 changed lines against `ebef069`; verified independently and assessed `medium/under_budget`.
 - Slice 2 → `main` after Slice 1: CPS-3 plus final task evidence; commits `ff9f64a`, `c56eb43`, `4b18d49`, and `5a35836`; 170 changed lines before this delivery-state update. Rollback reverts its comments/docstrings in `chat_lan/packaging/*.py`, `chat_lan/tests/*.py`, and `servidor.py`, plus its ODD evidence updates.
 - PR 1 (`https://github.com/Jenovo22/Chat_local_network/pull/1`) merged into `main` as `51114e8`.
-- PR 2 is materialized cleanly on `docs/comment-python-source-tooling` from updated `origin/main`; independent checks passed and it is ready to open.
+- PR 2 is open at `https://github.com/Jenovo22/Chat_local_network/pull/2` from `docs/comment-python-source-tooling` to `main`; it is clean and mergeable with 170 changed lines before this URL update.
 
 ## Progress
 
@@ -71,4 +71,4 @@ The implementation is modular but assumes familiarity with sockets, threads, SQL
 
 ## Next step
 
-Push `docs/comment-python-source-tooling`, open PR 2 toward `main`, and record its final URL.
+Review and merge PR 2 under ordinary repository policy; no implementation or delivery preparation remains.
