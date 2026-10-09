@@ -1,3 +1,5 @@
+"""Pruebas de integración del chat y pruebas unitarias del encuadre TCP."""
+
 import socket
 import tempfile
 import threading
@@ -13,6 +15,8 @@ from client.network import NetworkClient
 
 
 def wait_for(predicate, timeout=12):
+    """Espera una condición producida por otro hilo sin usar pausas fijas."""
+
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
         if predicate():
@@ -22,7 +26,11 @@ def wait_for(predicate, timeout=12):
 
 
 class ChatTests(unittest.TestCase):
+    """Ejercita clientes, servidor y bases SQLite sobre conexiones locales."""
+
     def setUp(self):
+        """Crea un servidor aislado y registros para liberar cada recurso."""
+
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name)
         self.db = Database(self.root / 'server.db')
@@ -31,6 +39,8 @@ class ChatTests(unittest.TestCase):
         self.clients, self.locals, self.sockets = [], [], []
 
     def tearDown(self):
+        """Detiene primero la actividad de red y luego cierra sus bases."""
+
         for client in self.clients:
             client.stop()
         for sock in self.sockets:
@@ -42,11 +52,15 @@ class ChatTests(unittest.TestCase):
         self.tmp.cleanup()
 
     def local(self, name):
+        """Crea una base cliente temporal y la registra para su limpieza."""
+
         database = LocalDatabase(self.root / f'{name}.db')
         self.locals.append(database)
         return database
 
     def connect(self, database):
+        """Inicia un cliente y espera a que termine su sincronización inicial."""
+
         client = NetworkClient(database, '127.0.0.1', self.server.port, 'Carlos')
         self.clients.append(client)
         client.start()
@@ -54,6 +68,8 @@ class ChatTests(unittest.TestCase):
         return client
 
     def raw(self, device=None):
+        """Abre un socket de protocolo para controlar cada trama de la prueba."""
+
         sock = socket.create_connection(('127.0.0.1', self.server.port), 3)
         self.sockets.append(sock)
         reader = Reader(sock)
@@ -61,7 +77,11 @@ class ChatTests(unittest.TestCase):
         return sock, reader, reader.receive()
 
     def test_2_5_10_clients_broadcast_and_capacity(self):
+        """Verifica difusión, colores únicos y rechazo del undécimo cliente."""
+
         databases = []
+        # Los clientes se acumulan entre rondas; expected representa la cantidad
+        # de mensajes que debe conservar cada historial tras la nueva difusión.
         for expected, count in enumerate((2, 5, 10), 1):
             while len(databases) < count:
                 database = self.local(str(len(databases)))
@@ -76,6 +96,8 @@ class ChatTests(unittest.TestCase):
         self.assertEqual(Reader(sock).receive()['payload']['codigo'], 'SERVER_FULL')
 
     def test_reconnect_outbox_and_persistent_identity(self):
+        """Comprueba cola sin conexión, identidad durable y resincronización."""
+
         first, second = self.local('a'), self.local('b')
         a, b = self.connect(first), self.connect(second)
         a.send_message('Antes del corte')
@@ -87,6 +109,8 @@ class ChatTests(unittest.TestCase):
         wait_for(lambda: first.cursor() == 2)
         second.close()
         self.locals.remove(second)
+        # Reabrir el mismo archivo simula un nuevo proceso cliente, no solo una
+        # reconexión del objeto existente.
         second = self.local('b')
         self.assertEqual(second.device_id, identity)
         self.assertEqual(len(second.pending()), 1)
@@ -97,6 +121,8 @@ class ChatTests(unittest.TestCase):
         self.assertEqual(second.pending(), [])
 
     def test_retry_is_idempotent_and_sync_paginated(self):
+        """Comprueba reintentos sin duplicados y sincronización por páginas."""
+
         sock, reader, response = self.raw()
         self.assertEqual(response['tipo'], 'LOGIN_OK')
         sock.sendall(encode('SYNC', {'ultimo_id': 0}))
@@ -106,6 +132,8 @@ class ChatTests(unittest.TestCase):
         self.assertEqual(reader.receive()['tipo'], 'MESSAGE')
         self.assertEqual(reader.receive()['tipo'], 'MESSAGE_ACK')
         sock.sendall(encode('MESSAGE', request))
+        # El segundo envío conserva client_message_id: debe responder ACK sin
+        # insertar ni difundir otra copia del mensaje.
         self.assertEqual(reader.receive()['tipo'], 'MESSAGE_ACK')
         for i in range(84):
             sock.sendall(encode('MESSAGE', {'contenido': f'Mensaje {i}'}))
@@ -113,6 +141,7 @@ class ChatTests(unittest.TestCase):
             reader.receive()
         other, incoming, _ = self.raw()
         cursor, pages, ids = 0, 0, []
+        # Cada respuesta avanza el cursor hasta que hay_mas indique la última.
         while True:
             other.sendall(encode('SYNC', {'ultimo_id': cursor}))
             data = incoming.receive()['payload']
@@ -126,8 +155,12 @@ class ChatTests(unittest.TestCase):
         self.assertEqual(pages, 3)
 
     def test_concurrent_messages_have_same_order(self):
+        """Verifica un orden global idéntico ante cinco emisores concurrentes."""
+
         databases = [self.local(f'c{i}') for i in range(5)]
         clients = [self.connect(db) for db in databases]
+        # c=c captura el cliente de cada iteración; sin ese valor predeterminado,
+        # todas las lambdas terminarían usando el último cliente de la lista.
         workers = [threading.Thread(target=lambda c=c: [c.send_message(f'Mensaje {i}') for i in range(8)]) for c in clients]
         for worker in workers:
             worker.start()
@@ -137,6 +170,8 @@ class ChatTests(unittest.TestCase):
         self.assertTrue(all(db.history() == databases[0].history() for db in databases))
 
     def test_duplicate_login_and_invalid_first_command(self):
+        """Rechaza una identidad repetida y comandos enviados antes del LOGIN."""
+
         identity = str(uuid.uuid4())
         _, _, first = self.raw(identity)
         _, _, duplicate = self.raw(identity)
@@ -148,6 +183,8 @@ class ChatTests(unittest.TestCase):
         self.assertEqual(Reader(sock).receive()['tipo'], 'ERROR')
 
     def test_server_restart_recovers_and_keeps_color(self):
+        """Reinicia el servidor y conserva identidad, color y mensajes pendientes."""
+
         local = self.local('restart')
         client = self.connect(local)
         client.send_message('Persistido')
@@ -166,7 +203,12 @@ class ChatTests(unittest.TestCase):
 
 
 class ProtocolTests(unittest.TestCase):
+    """Aísla el lector de tramas de los componentes de servidor y cliente."""
+
     def test_fragmented_unicode_and_multiple_frames(self):
+        """Reconstruye una trama fragmentada y conserva la trama siguiente."""
+
+        # socketpair proporciona dos extremos conectados sin abrir un puerto.
         a, b = socket.socketpair()
         self.addCleanup(a.close)
         self.addCleanup(b.close)
@@ -174,6 +216,8 @@ class ProtocolTests(unittest.TestCase):
         data = encode('MESSAGE', {'contenido': 'Hola 👋\nsegunda línea'})
         reader = Reader(b)
         a.sendall(data[:12])
+        # La primera parte no contiene una trama completa: el timeout confirma
+        # que Reader espera los bytes restantes en lugar de entregar datos parciales.
         with self.assertRaises(socket.timeout):
             reader.receive()
         a.sendall(data[12:] + encode('PING'))
@@ -181,7 +225,11 @@ class ProtocolTests(unittest.TestCase):
         self.assertEqual(reader.receive()['tipo'], 'PING')
 
     def test_invalid_json_and_oversize(self):
+        """Rechaza JSON inválido, estructuras no permitidas y tramas enormes."""
+
         class FakeSocket:
+            """Expone solo recv para alimentar Reader con bytes controlados."""
+
             def __init__(self, data):
                 self.data = data
             def recv(self, _):

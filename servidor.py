@@ -1,3 +1,10 @@
+"""Prototipo heredado del servidor TCP, anterior a la aplicación modular.
+
+Se conserva como referencia histórica y ejemplo independiente. El servidor
+actual vive en ``chat_lan/server`` y usa un protocolo, persistencia y ciclo de
+vida distintos; este archivo no debe tomarse como su punto de entrada.
+"""
+
 import socket
 import threading
 from datetime import datetime
@@ -20,7 +27,7 @@ MAX_CLIENTES = 10
 # socket_cliente -> nombre_usuario
 clientes = {}
 
-# Locks para evitar problemas entre múltiples hilos
+# Cada bloqueo protege un recurso compartido diferente entre los hilos cliente.
 clientes_lock = threading.Lock()
 historial_lock = threading.Lock()
 
@@ -39,6 +46,8 @@ ARCHIVO_HISTORIAL = f"historial_{fecha_actual}.txt"
 # ============================================================
 
 def guardar_historial(mensaje):
+    """Añade una línea fechada al archivo de texto sin escrituras simultáneas."""
+
     hora = datetime.now().strftime("%H:%M:%S")
 
     linea = f"[{hora}] {mensaje}"
@@ -57,13 +66,10 @@ def guardar_historial(mensaje):
 # ============================================================
 
 def enviar_mensaje(cliente, mensaje):
-    """
-    Cada mensaje termina con \n.
+    """Envía un mensaje completo delimitado por salto de línea."""
 
-    Esto nos permitirá separar correctamente los mensajes
-    cuando construyamos cliente.py.
-    """
-
+    # TCP transporta bytes sin conservar fronteras entre mensajes. El salto de
+    # línea permite al receptor reconstruir cada unidad mediante readline().
     datos = (mensaje + "\n").encode("utf-8")
 
     cliente.sendall(datos)
@@ -74,8 +80,11 @@ def enviar_mensaje(cliente, mensaje):
 # ============================================================
 
 def enviar_a_todos(mensaje, excluir=None):
+    """Difunde un mensaje y retira las conexiones que ya no responden."""
 
     with clientes_lock:
+        # La copia evita mantener el bloqueo durante operaciones de red, que
+        # podrían tardar o fallar y bloquear mientras tanto a otros hilos.
         clientes_actuales = list(clientes.keys())
 
     clientes_con_error = []
@@ -100,6 +109,7 @@ def enviar_a_todos(mensaje, excluir=None):
 # ============================================================
 
 def eliminar_cliente(cliente):
+    """Quita una conexión una sola vez y anuncia su salida si estaba registrada."""
 
     with clientes_lock:
         nombre = clientes.pop(cliente, None)
@@ -127,6 +137,7 @@ def eliminar_cliente(cliente):
 # ============================================================
 
 def manejar_cliente(cliente, direccion):
+    """Valida un cliente y atiende sus mensajes dentro de un hilo dedicado."""
 
     nombre = None
 
@@ -141,7 +152,8 @@ def manejar_cliente(cliente, direccion):
             "NOMBRE"
         )
 
-        # Creamos un lector para trabajar línea por línea.
+        # makefile adapta el flujo de bytes del socket a un lector de texto que
+        # respeta el delimitador definido por enviar_mensaje().
         lector = cliente.makefile(
             "r",
             encoding="utf-8",
@@ -182,6 +194,8 @@ def manejar_cliente(cliente, direccion):
 
         with clientes_lock:
 
+            # La comparación no distingue mayúsculas, aunque se conserva la
+            # escritura original del nombre para mostrarla en el chat.
             nombres_actuales = [
                 nombre_actual.lower()
                 for nombre_actual in clientes.values()
@@ -320,6 +334,7 @@ def manejar_cliente(cliente, direccion):
 
     finally:
 
+        # También se limpia el registro después de errores o retornos tempranos.
         eliminar_cliente(
             cliente
         )
@@ -330,6 +345,7 @@ def manejar_cliente(cliente, direccion):
 # ============================================================
 
 def iniciar_servidor():
+    """Acepta conexiones TCP y crea un hilo en segundo plano por cliente."""
 
     servidor = socket.socket(
         socket.AF_INET,
@@ -446,6 +462,7 @@ def iniciar_servidor():
                     cliente,
                     direccion
                 ),
+                # Los hilos daemon no impiden cerrar este prototipo con Ctrl+C.
                 daemon=True
             )
 
@@ -470,6 +487,7 @@ def iniciar_servidor():
     finally:
 
         with clientes_lock:
+            # Se toma una instantánea para cerrar sockets fuera del bloqueo.
             clientes_actuales = list(
                 clientes.keys()
             )
