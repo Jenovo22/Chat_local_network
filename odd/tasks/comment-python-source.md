@@ -54,14 +54,14 @@ The implementation is modular but assumes familiarity with sockets, threads, SQL
   - Files: `chat_lan/packaging/*.py`, `chat_lan/tests/*.py`, `servidor.py`.
   - Acceptance: build/verification steps, fixtures and assertions, and the legacy script's flow are documented; legacy status is explicit; behavior is unchanged.
   - Checks: full compilation and complete unit test suite.
-  - Evidence: commits `d440583` and `6aa83c8`; 146 authored source changed lines across 6 files; `python3 -m compileall -q packaging tests`, `python3 -m py_compile servidor.py`, and `python3 -m unittest discover -s tests -v` passed with 9 tests run (8 passed, 1 skipped because PySide6 is unavailable); executable AST comparison, parent spot-checks, structural diff readback, and `git diff --check` passed. Packaging/build scripts were intentionally not executed because they replace generated artifacts. Independent verification found two low-severity teaching imprecisions, corrected in the follow-up commit.
+  - Evidence: original commits `d440583` and `6aa83c8`, materialized on the clean second-slice branch as `ff9f64a` and `c56eb43`; 146 authored source changed lines across 6 files; `python3 -m compileall -q packaging tests`, `python3 -m py_compile servidor.py`, and `python3 -m unittest discover -s tests -v` passed with 9 tests run (8 passed, 1 skipped because PySide6 is unavailable); executable AST comparison, parent spot-checks, structural diff readback, and `git diff --check` passed. Packaging/build scripts were intentionally not executed because they replace generated artifacts. Independent verification found two low-severity teaching imprecisions, corrected in the follow-up commit.
 
 ## Delivery slices
 
 - Slice 1 → `main`: CPS-1 and CPS-2; commits `fefd2fa`, `34f8a54`, and `b70d990`; 281 changed lines against `ebef069`; verified independently and assessed `medium/under_budget`.
-- Slice 2 → `main` after Slice 1: CPS-3 plus final task evidence; commits `d440583` and `6aa83c8`; 169 changed lines. Rollback reverts its comments/docstrings in `chat_lan/packaging/*.py`, `chat_lan/tests/*.py`, and `servidor.py`, plus its ODD evidence update.
-- PR 1 is open at `https://github.com/Jenovo22/Chat_local_network/pull/1` from `docs/comment-python-source-core` to `main` (281 changed lines).
-- PR 2 remains intentionally unopened until PR 1 merges, so its eventual diff toward `main` contains only the 169-line packaging/tests/legacy slice.
+- Slice 2 → `main` after Slice 1: CPS-3 plus final task evidence; commits `ff9f64a`, `c56eb43`, `4b18d49`, and `5a35836`; 170 changed lines before this delivery-state update. Rollback reverts its comments/docstrings in `chat_lan/packaging/*.py`, `chat_lan/tests/*.py`, and `servidor.py`, plus its ODD evidence updates.
+- PR 1 (`https://github.com/Jenovo22/Chat_local_network/pull/1`) merged into `main` as `51114e8`.
+- PR 2 is materialized cleanly on `docs/comment-python-source-tooling` from updated `origin/main`; independent checks passed and it is ready to open.
 
 ## Progress
 
@@ -71,4 +71,4 @@ The implementation is modular but assumes familiarity with sockets, threads, SQL
 
 ## Next step
 
-Wait for PR 1 to merge, then materialize the second clean branch from updated `main`, open PR 2, and preserve the recorded verification evidence.
+Push `docs/comment-python-source-tooling`, open PR 2 toward `main`, and record its final URL.
