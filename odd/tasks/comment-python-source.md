@@ -27,7 +27,8 @@ The implementation is modular but assumes familiarity with sockets, threads, SQL
 ## Delivery and verification
 
 - Delivery strategy: `ask-on-risk`.
-- Forecast: approximately 250–350 authored changed lines, below the 400-line delivery threshold.
+- Chain strategy: `stacked-to-main`, explicitly selected after the forecast crossed 400 lines.
+- Final total: 434 changed lines against `ebef069`, divided into two reviewable stacked-to-main slices.
 - TDD: disabled/unknown; no explicit project TDD configuration was found.
 - Test runner: `python3 -m unittest discover -s tests -v` from `chat_lan/`.
 - Structural check: `python3 -m compileall -q common server client packaging tests` from `chat_lan/`, plus `python3 -m py_compile servidor.py` from the repository root.
@@ -46,21 +47,28 @@ The implementation is modular but assumes familiarity with sockets, threads, SQL
   - Files: `chat_lan/client/*.py`.
   - Acceptance: local persistence, reconnect loop, message synchronization, console flow, Qt signals/widgets, and compatibility imports are explained without behavior changes.
   - Checks: client compilation and complete unit test suite.
-  - Evidence: 118 explanatory lines added across 6 files; `python3 -m compileall -q client` passed; `python3 -m unittest discover -s tests -v` passed with 9 tests run (8 passed, 1 skipped because PySide6 is unavailable); executable AST comparison and `git diff --check -- chat_lan/client` passed; parent spot-check compilation and structural diff readback passed. Commit pending.
+  - Evidence: commit `b70d990`; 118 explanatory lines added across 6 files; `python3 -m compileall -q client` passed; `python3 -m unittest discover -s tests -v` passed with 9 tests run (8 passed, 1 skipped because PySide6 is unavailable); executable AST comparison and `git diff --check -- chat_lan/client` passed; parent spot-check compilation and structural diff readback passed. Native assessment of `ebef069..b70d990` classified the 281-line slice as `medium` and `under_budget`, so review remains pending until the slice reaches its delivery boundary.
 
-- [ ] **CPS-3 — Explain packaging, tests, and legacy prototype**
+- [x] **CPS-3 — Explain packaging, tests, and legacy prototype**
   - Route: delegated writer; implementation spans packaging scripts, test suites, and a legacy standalone file.
   - Files: `chat_lan/packaging/*.py`, `chat_lan/tests/*.py`, `servidor.py`.
   - Acceptance: build/verification steps, fixtures and assertions, and the legacy script's flow are documented; legacy status is explicit; behavior is unchanged.
   - Checks: full compilation and complete unit test suite.
-  - Evidence: pending.
+  - Evidence: original commits `d440583` and `6aa83c8`, materialized on the clean second-slice branch as `ff9f64a` and `c56eb43`; 146 authored source changed lines across 6 files; `python3 -m compileall -q packaging tests`, `python3 -m py_compile servidor.py`, and `python3 -m unittest discover -s tests -v` passed with 9 tests run (8 passed, 1 skipped because PySide6 is unavailable); executable AST comparison, parent spot-checks, structural diff readback, and `git diff --check` passed. Packaging/build scripts were intentionally not executed because they replace generated artifacts. Independent verification found two low-severity teaching imprecisions, corrected in the follow-up commit.
+
+## Delivery slices
+
+- Slice 1 → `main`: CPS-1 and CPS-2; commits `fefd2fa`, `34f8a54`, and `b70d990`; 281 changed lines against `ebef069`; verified independently and assessed `medium/under_budget`.
+- Slice 2 → `main` after Slice 1: CPS-3 plus final task evidence; commits `ff9f64a`, `c56eb43`, `4b18d49`, and `5a35836`; 170 changed lines before this delivery-state update. Rollback reverts its comments/docstrings in `chat_lan/packaging/*.py`, `chat_lan/tests/*.py`, and `servidor.py`, plus its ODD evidence updates.
+- PR 1 (`https://github.com/Jenovo22/Chat_local_network/pull/1`) merged into `main` as `51114e8`.
+- PR 2 is materialized cleanly on `docs/comment-python-source-tooling` from updated `origin/main`; independent checks passed and it is ready to open.
 
 ## Progress
 
-- Current task: CPS-3.
-- Completed checks: CPS-1 and CPS-2 compilation, full unit suites, diff whitespace validation, structural diff readback, and executable-AST comparisons.
-- Failed, unavailable, or skipped checks: GUI test skipped because PySide6 is unavailable. Native assessment was initially unassessable because existing untracked metadata required explicit inventory; its exact selection continuation then returned a START for only the uncommitted ODD document instead of the committed work-unit range. That incorrect START was not executed, native review is recorded as unavailable, and an independent verifier inspected `ebef069..fefd2fa` instead.
+- Current task: all implementation tasks completed and independently verified.
+- Completed checks: compilation for all Python areas, full unit suites, diff whitespace validation, structural diff readback, and executable-AST comparisons.
+- Failed, unavailable, or skipped checks: GUI test skipped because PySide6 is unavailable. Packaging/build scripts were not run because they create or replace generated artifacts. CPS-1 native assessment was initially unassessable because existing untracked metadata required explicit inventory; its exact selection continuation then returned a START for only the uncommitted ODD document instead of the committed work-unit range. The same selector loss recurred for the high-risk CPS-3 range. Neither incorrect START was executed; independent verifiers inspected both committed ranges. CPS-2 reassessment with explicit exclusion succeeded as `medium/under_budget`.
 
 ## Next step
 
-Commit CPS-2, update the delivery forecast, then delegate CPS-3 within the selected delivery boundary.
+Push `docs/comment-python-source-tooling`, open PR 2 toward `main`, and record its final URL.
