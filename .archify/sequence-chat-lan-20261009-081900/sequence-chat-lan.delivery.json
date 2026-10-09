@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "b80a323b-3b62-4ab5-84c4-bb7b39160c68",
+  "status": "current",
+  "command": "deliver",
+  "type": "sequence",
+  "input": "/home/sergiog/Documentos/Linux/Chat_local_network/.archify/sequence-chat-lan-20261009-081900/candidate.json",
+  "output": "/home/sergiog/Documentos/Linux/Chat_local_network/.archify/sequence-chat-lan-20261009-081900/sequence-chat-lan.html",
+  "specification": {
+    "sha256": "d390032e1ec748848cd52e4912fdbaf73e571608550f6c38f49a9993129a6692",
+    "bytes": 4237
+  },
+  "artifact": {
+    "sha256": "ab2876dd2caf2752b66f88b1fa03ebbe1b21babfb8eb1c0d51f4f461e1ae02b0",
+    "bytes": 760198
+  }
+}
