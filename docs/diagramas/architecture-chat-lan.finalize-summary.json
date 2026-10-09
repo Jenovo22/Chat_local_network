@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "ok": false,
+  "command": "finalize",
+  "status": "fail",
+  "type": "architecture",
+  "quality": "showcase",
+  "specification": {
+    "path": "/home/sergiog/Documentos/Linux/Chat_local_network/.archify/architecture-chat-lan-20261009-081900/candidate.json",
+    "sha256": "224db8ec5050de09f1be8b7c5c5f2fc96d21b4d989bb03c00b601a7a8c2357cf",
+    "bytes": 4433
+  },
+  "artifact": {
+    "path": "/home/sergiog/Documentos/Linux/Chat_local_network/.archify/architecture-chat-lan-20261009-081900/architecture-chat-lan.html",
+    "sha256": "6cdea4dd85dcb59720aced258f3dfed61901d7f3f64ca734bf428e518bbf4d4d",
+    "bytes": 760253
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "fail"
+  },
+  "failedStage": "browser-check",
+  "diagnostics": [
+    {
+      "code": "viewer/browser-check-runtime",
+      "severity": "error",
+      "message": "browser-check could not complete its Chrome inspection.",
+      "subject": {
+        "artifact": "/home/sergiog/Documentos/Linux/Chat_local_network/.archify/architecture-chat-lan-20261009-081900/architecture-chat-lan.html"
+      },
+      "evidence": {
+        "reason": "Chrome DevTools process launch failed: spawn /home/sergiog/.config/google-chrome EACCES [EACCES]\nChrome process: exit code -13.\nChrome transport: Node v22.22.1, libuv 1.51.0, linux; pid=unavailable, exitCode=-13, signalCode=null.\nChrome read pipe: readable=true, ended=false, destroyed=false, receivedBytes=0, messages=0, bufferedBytes=0.\nChrome write pipe: writable=false, ended=false, destroyed=false, completedWrites=0, writtenBytes=0, bufferedBytes=0."
+      },
+      "supportedFixes": [
+        "resolve the reported Chrome inspection error, then rerun browser-check"
+      ]
+    }
+  ],
+  "diagnosticSummary": {
+    "total": 1,
+    "shown": 1,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "/home/sergiog/Documentos/Linux/Chat_local_network/.archify/architecture-chat-lan-20261009-081900/architecture-chat-lan.finalize.json",
+    "summaryReceipt": "/home/sergiog/Documentos/Linux/Chat_local_network/.archify/architecture-chat-lan-20261009-081900/architecture-chat-lan.finalize-summary.json",
+    "browserCheckReceipt": "/home/sergiog/Documentos/Linux/Chat_local_network/.archify/architecture-chat-lan-20261009-081900/architecture-chat-lan.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.0.1",
+    "availableVersion": "3.0.1",
+    "releaseNotes": null,
+    "checkedAt": "2026-10-09T13:19:25.074Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 1125
+}

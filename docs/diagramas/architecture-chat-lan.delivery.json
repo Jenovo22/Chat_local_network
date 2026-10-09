@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "5b9de2e8-41bd-4b12-af07-6866261e88f9",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "/home/sergiog/Documentos/Linux/Chat_local_network/.archify/architecture-chat-lan-20261009-081900/candidate.json",
+  "output": "/home/sergiog/Documentos/Linux/Chat_local_network/.archify/architecture-chat-lan-20261009-081900/architecture-chat-lan.html",
+  "specification": {
+    "sha256": "224db8ec5050de09f1be8b7c5c5f2fc96d21b4d989bb03c00b601a7a8c2357cf",
+    "bytes": 4433
+  },
+  "artifact": {
+    "sha256": "6cdea4dd85dcb59720aced258f3dfed61901d7f3f64ca734bf428e518bbf4d4d",
+    "bytes": 760253
+  }
+}
