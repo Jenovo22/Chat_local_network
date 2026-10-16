@@ -1,15 +1,22 @@
 # Arquitectura
 
+## Vista interactiva
+
+La [arquitectura interactiva de Archify](../../.archify/architecture-chat-lan-20261009-081900/architecture-chat-lan.html)
+complementa este diagrama con los límites cliente/servidor, las dos SQLite y el
+codec Go explícitamente fuera de la ruta operativa.
+
 ```mermaid
 flowchart TB
     A[Cliente PySide6 o consola] --> N[Hilo de red]
     A --> L[(SQLite local)]
     N --> L
-    N <-->|TCP: JSON + LF| S[Servidor: hilo por conexión]
+    N <-->|TCP: JSON + LF| S[Servidor Python: hilo por conexión]
     S --> U[Gestor de usuarios]
     U --> D[(SQLite oficial)]
     S --> D
     S <-->|TCP| B[Otros clientes]
+    G[Codec Go experimental] -. Compatibilidad de trama .-> N
 ```
 
 ## Responsabilidades
@@ -37,6 +44,16 @@ El hilo de red del cliente es el único que escribe en su socket. La GUI comunic
 envíos mediante la bandeja SQLite, y el hilo devuelve eventos mediante señales
 Qt; todos los widgets se modifican en el hilo gráfico. La base local utiliza su
 propio bloqueo para coordinar GUI y red. El UUID y el cursor viven en `metadata`.
+
+## Implementación Go: alcance actual
+
+`server_go/internal/protocol` es un módulo Go aislado que replica el codec de
+tramas (JSON UTF-8 delimitado por LF) y comprueba compatibilidad con
+`common/protocol.py`. No contiene listener TCP, gestión de sesiones, SQLite,
+CLI ni clientes; por ello el servidor Python sigue siendo la implementación
+funcional del sistema. El detalle de su alcance está en
+[`../server_go/README.md`](../server_go/README.md) y su evidencia en la
+[matriz de verificación](verificacion.md).
 
 ## Sincronización sin huecos
 

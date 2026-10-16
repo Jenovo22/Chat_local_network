@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Arquitectura operativa de Chat LAN",
+    "subtitle": "El servidor Python y SQLite constituyen el sistema operativo; el codec Go es experimental.",
+    "output": ".archify/architecture-chat-lan-20261009-081900/architecture-chat-lan.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/Jenovo22/Chat_local_network.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "ebef06989c558ebe135c2002c5e6dcef2420c69c"
+    }
+  },
+  "components": [
+    {
+      "id": "person",
+      "type": "external",
+      "label": "Persona usuaria",
+      "sublabel": "red LAN de confianza",
+      "pos": [30, 250],
+      "size": [140, 64],
+      "sources": [{"path": "chat_lan/client/main.py", "line": 38, "end_line": 60, "label": "Entrada cliente"}]
+    },
+    {
+      "id": "client-ui",
+      "type": "frontend",
+      "label": "Cliente Chat LAN",
+      "sublabel": "consola o GUI PySide6",
+      "pos": [280, 250],
+      "size": [160, 64],
+      "sources": [{"path": "chat_lan/client/main.py", "line": 38, "end_line": 60, "label": "Entrada cliente"}]
+    },
+    {
+      "id": "network-client",
+      "type": "frontend",
+      "label": "Cliente de red Python",
+      "sublabel": "un hilo posee el socket",
+      "pos": [550, 250],
+      "size": [170, 64],
+      "sources": [{"path": "chat_lan/client/network.py", "line": 23, "end_line": 45, "label": "Conexión TCP"}]
+    },
+    {
+      "id": "local-sqlite",
+      "type": "database",
+      "label": "SQLite local",
+      "sublabel": "historial, cursor y pendientes",
+      "pos": [550, 410],
+      "size": [170, 64],
+      "sources": [{"path": "chat_lan/client/local_database.py", "line": 10, "end_line": 24, "label": "Esquema local"}]
+    },
+    {
+      "id": "python-server",
+      "type": "backend",
+      "label": "Servidor Python",
+      "sublabel": "TCP; hilo por conexión",
+      "pos": [870, 250],
+      "size": [170, 64],
+      "sources": [{"path": "chat_lan/server/socket_manager.py", "line": 29, "end_line": 49, "label": "Servidor TCP"}]
+    },
+    {
+      "id": "server-sqlite",
+      "type": "database",
+      "label": "SQLite oficial",
+      "sublabel": "usuarios y mensajes",
+      "pos": [870, 410],
+      "size": [170, 64],
+      "sources": [{"path": "chat_lan/server/database.py", "line": 11, "end_line": 35, "label": "Esquema oficial"}]
+    },
+    {
+      "id": "go-codec",
+      "type": "backend",
+      "label": "Codec Go experimental",
+      "sublabel": "solo compatibilidad de trama; no servidor TCP",
+      "pos": [1160, 410],
+      "size": [210, 64],
+      "tag": "fuera del servidor operativo",
+      "sources": [{"path": "chat_lan/common/protocol.py", "line": 17, "end_line": 49, "label": "Contrato Python compatible"}]
+    }
+  ],
+  "boundaries": [
+    {"kind": "region", "label": "Dispositivo cliente", "wraps": ["client-ui", "network-client", "local-sqlite"], "pad": 28},
+    {"kind": "region", "label": "Equipo servidor", "wraps": ["python-server", "server-sqlite"], "pad": 28}
+  ],
+  "connections": [
+    {"id": "person-to-ui", "from": "person", "to": "client-ui", "label": "conecta y escribe", "variant": "emphasis"},
+    {"id": "ui-to-network", "from": "client-ui", "to": "network-client", "label": "eventos y envíos"},
+    {"id": "network-to-local", "from": "network-client", "to": "local-sqlite", "label": "persiste cursor, historial y pendientes", "fromSide": "bottom", "toSide": "top"},
+    {"id": "tcp-to-server", "from": "network-client", "to": "python-server", "label": "TCP: JSON UTF-8 + LF", "variant": "emphasis"},
+    {"id": "server-to-store", "from": "python-server", "to": "server-sqlite", "label": "persiste antes de publicar", "fromSide": "bottom", "toSide": "top"},
+    {"id": "go-compatible-codec", "from": "go-codec", "to": "network-client", "label": "compatibilidad de codec; no ruta operativa", "variant": "dashed", "fromSide": "left", "toSide": "bottom"}
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Fuente de verdad",
+      "items": ["La SQLite del servidor define el orden oficial.", "La SQLite local mantiene caché, cursor y bandeja de salida."]
+    },
+    {
+      "dot": "amber",
+      "title": "Alcance Go",
+      "items": ["El módulo Go valida el codec compatible.", "No implementa listener TCP, sesiones ni persistencia; no sustituye al servidor Python."]
+    }
+  ]
+}

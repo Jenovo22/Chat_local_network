@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Conectar, sincronizar, enviar y reintentar",
+    "subtitle": "Recorrido implementado de un cliente Chat LAN; los pendientes se reenvían solo tras sincronizar.",
+    "output": ".archify/sequence-chat-lan-20261009-081900/sequence-chat-lan.html",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "repository": {
+      "url": "https://github.com/Jenovo22/Chat_local_network.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "ebef06989c558ebe135c2002c5e6dcef2420c69c"
+    }
+  },
+  "participants": [
+    {"id": "person", "type": "external", "label": "Persona", "sublabel": "consola o GUI", "sources": [{"path": "chat_lan/client/main.py", "line": 12, "end_line": 35, "label": "Consola"}]},
+    {"id": "client", "type": "frontend", "label": "Cliente de red", "sublabel": "NetworkClient", "sources": [{"path": "chat_lan/client/network.py", "line": 23, "end_line": 37, "label": "Inicio y envío"}]},
+    {"id": "localdb", "type": "database", "label": "SQLite local", "sublabel": "cursor y pendientes", "sources": [{"path": "chat_lan/client/local_database.py", "line": 47, "end_line": 74, "label": "Historial y bandeja"}]},
+    {"id": "server", "type": "backend", "label": "Servidor Python", "sublabel": "ChatServer", "sources": [{"path": "chat_lan/server/socket_manager.py", "line": 101, "end_line": 152, "label": "Despacho"}]},
+    {"id": "serverdb", "type": "database", "label": "SQLite oficial", "sublabel": "historial ordenado", "sources": [{"path": "chat_lan/server/database.py", "line": 57, "end_line": 67, "label": "Historial y deduplicación"}]}
+  ],
+  "segments": [
+    {"from": 160, "to": 300, "label": "Conectar y sincronizar"},
+    {"from": 300, "to": 520, "label": "Enviar y confirmar"},
+    {"from": 520, "to": 600, "label": "Corte y reintento"}
+  ],
+  "messages": [
+    {"id": "connect", "from": "person", "to": "client", "y": 175, "label": "Conectar con nombre y destino", "variant": "default"},
+    {"id": "login", "from": "client", "to": "server", "y": 190, "label": "LOGIN (UUID persistente)", "variant": "emphasis"},
+    {"id": "login-ok", "from": "server", "to": "client", "y": 220, "label": "LOGIN_OK (server_id y color)", "variant": "return"},
+    {"id": "sync", "from": "client", "to": "server", "y": 250, "label": "SYNC (cursor local)", "variant": "emphasis"},
+    {"id": "history", "from": "server", "to": "serverdb", "y": 280, "label": "leer página ordenada", "variant": "default"},
+    {"id": "sync-response", "from": "server", "to": "client", "y": 315, "label": "SYNC_RESPONSE; repetir si hay_mas", "variant": "return"},
+    {"id": "store-sync", "from": "client", "to": "localdb", "y": 345, "label": "guardar mensajes y cursor", "variant": "default"},
+    {"id": "queue", "from": "person", "to": "client", "y": 375, "label": "escribir mensaje", "variant": "default"},
+    {"id": "store-pending", "from": "client", "to": "localdb", "y": 405, "label": "guardar pendiente con UUID", "variant": "emphasis"},
+    {"id": "message", "from": "client", "to": "server", "y": 435, "label": "MESSAGE (tras SYNC final)", "variant": "emphasis"},
+    {"id": "persist", "from": "server", "to": "serverdb", "y": 465, "label": "persistir; UUID evita duplicado", "variant": "default"},
+    {"id": "ack", "from": "server", "to": "client", "y": 495, "label": "MESSAGE_ACK", "variant": "return"},
+    {"id": "clear-pending", "from": "client", "to": "localdb", "y": 525, "label": "eliminar pendiente confirmado", "variant": "default"},
+    {"id": "retry", "from": "client", "to": "server", "y": 555, "label": "tras corte: reconectar, SYNC y reenviar mismo UUID", "variant": "dashed", "note": "Espera progresiva de 1 a 15 s; el servidor solo confirma un reintento."}
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Orden de recuperación",
+      "items": ["El cliente sincroniza antes de transmitir pendientes.", "Una publicación oficial o ACK elimina el pendiente local."]
+    },
+    {
+      "dot": "amber",
+      "title": "Límite del diagrama",
+      "items": ["Describe el cliente y servidor Python operativos.", "El codec Go experimental no participa en esta secuencia de red."]
+    }
+  ]
+}

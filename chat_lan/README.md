@@ -96,10 +96,20 @@ chat_lan/
 │   └── requirements.txt
 ├── tests/test_chat.py
 └── docs/
+    ├── descripcion-funcional.md
+    ├── requisitos-y-casos-de-uso.md
     ├── arquitectura.md
     ├── protocolo.md
+    ├── verificacion.md
     └── diagramas/secuencia.mmd
 ```
+
+Consulta la [descripción funcional](docs/descripcion-funcional.md), los
+[requisitos y casos de uso](docs/requisitos-y-casos-de-uso.md), la
+[arquitectura](docs/arquitectura.md) y la [matriz de verificación](docs/verificacion.md)
+para el alcance y la evidencia. El módulo experimental
+[`server_go`](server_go/README.md) solo implementa el codec de protocolo; no
+reemplaza al servidor Python.
 
 ## Pruebas
 
@@ -107,11 +117,13 @@ chat_lan/
 python3 -m unittest discover -s tests -v
 ```
 
-Las ocho pruebas usan sockets reales en loopback y bases temporales. Cubren
+Las ocho pruebas de backend usan sockets reales en loopback y bases temporales.
+Cubren
 2/5/10 clientes, límite de conexiones, nombres duplicados y colores, orden de
 mensajes concurrentes, cola persistente, reconexión, reinicio del servidor,
 sincronización paginada, idempotencia, login inválido y fragmentación TCP/Unicode.
-No necesitan PySide6. Se ejecutaron satisfactoriamente con Python 3.12.3.
+No necesitan PySide6. En la auditoría documentada, esas ocho pruebas pasaron;
+la novena prueba gráfica se omitió porque PySide6 no estaba instalado.
 
 La interfaz fue probada con dos ventanas PySide6 en modo sin pantalla: envío,
 recepción, representación segura de texto, persistencia y reconexión automática.
@@ -119,6 +131,15 @@ Con PySide6 instalado se ejecutan nueve pruebas, incluyendo la prueba gráfica.
 También se probaron dos procesos del ejecutable autónomo: apertura de la GUI,
 conexión automática, recepción y persistencia de un mensaje real.
 La prueba física entre varios equipos de una LAN queda pendiente.
+
+El codec Go se comprueba por separado desde `server_go`:
+
+```bash
+go test ./...
+```
+
+Incluye compatibilidad de codec con `common/protocol.py`, pero no prueba un
+servidor Go completo. Véase [verificación](docs/verificacion.md).
 
 ## Ejecutable para compartir
 
